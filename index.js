@@ -28,6 +28,11 @@ app.get('/api/persons', (req, resp) => {
     resp.send(persons);
 })
 
+app.get('/info', (req, resp) => {
+  const msq = `<p>Phonebook has info for ${persons.length} people</p> <p>${new Date()}</p>`;
+  resp.send(msq);
+})
+
 
 
 
