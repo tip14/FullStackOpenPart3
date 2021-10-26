@@ -31,16 +31,23 @@ app.get('/api/persons', (req, resp) => {
 app.get('/api/persons/:id', (req, resp) => {
   const personId = req.params.id;
   const byPersonId = persons.find(p => p.id == personId)
-  console.log('pid', byPersonId);
 
   if(byPersonId){
     resp.send(byPersonId);
   } else {
     resp.status(404).end()
   }
-    
 })
 
+app.delete('/api/persons/:id', (req, resp) => {
+  const personId = req.params.id;
+  for(let i = 0; i < persons.length; i++) {
+    if(persons[i].id == personId) {
+      persons.splice(i, 1); 
+    }
+  }
+  resp.end();
+})
 
 
 app.get('/info', (req, resp) => {
