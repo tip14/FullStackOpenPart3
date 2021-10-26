@@ -43,9 +43,30 @@ app.get('/api/persons/:id', (req, resp) => {
 
 app.post('/api/persons', (req, resp) => {
   const newPerson = req.body;
+  
+  if(!newPerson.name) {
+    const msg = { error: 'name is empty' }
+    resp.status(400).json(msg).end();
+    return;
+  }
+
+  if(!newPerson.number) {
+    const msg = { error: 'number is empty' }
+    resp.status(400).json(msg).end();
+    return;
+  }
+
+  if(persons.filter(p => p.name === newPerson.name).length > 0) {
+    const msg = { error: 'name must be unique' }
+    resp.status(400).json(msg).end();
+    return;
+  }
+
+
+
   newPerson.id = Math.floor(Math.random() * 1000);
   persons.push(newPerson)
-  resp.status(201).end();
+  resp.status(201).json(newPerson);
 })
 
 app.delete('/api/persons/:id', (req, resp) => {
