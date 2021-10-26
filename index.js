@@ -28,6 +28,21 @@ app.get('/api/persons', (req, resp) => {
     resp.send(persons);
 })
 
+app.get('/api/persons/:id', (req, resp) => {
+  const personId = req.params.id;
+  const byPersonId = persons.find(p => p.id == personId)
+  console.log('pid', byPersonId);
+
+  if(byPersonId){
+    resp.send(byPersonId);
+  } else {
+    resp.status(404).end()
+  }
+    
+})
+
+
+
 app.get('/info', (req, resp) => {
   const msq = `<p>Phonebook has info for ${persons.length} people</p> <p>${new Date()}</p>`;
   resp.send(msq);
