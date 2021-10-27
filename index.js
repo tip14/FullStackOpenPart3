@@ -93,7 +93,7 @@ app.get('/info', (req, resp) => {
 
 
 
-const APP_PORT = 3001
+const APP_PORT = process.env.PORT || 3001
 app.listen(APP_PORT, () => {
   console.log(`Starting Express server on port ${APP_PORT}`)
 })
