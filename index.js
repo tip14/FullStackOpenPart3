@@ -57,29 +57,27 @@ app.get('/api/persons/:id', (req, resp) => {
 })
 
 app.post('/api/persons', (req, resp) => {
-  const newPerson = req.body;
+  const requestBody = req.body;
 
-  if (!newPerson.name) {
+  if (!requestBody.name) {
     const msg = { error: 'name is empty' }
     resp.status(400).json(msg).end();
     return;
   }
 
-  if (!newPerson.number) {
+  if (!requestBody.number) {
     const msg = { error: 'number is empty' }
     resp.status(400).json(msg).end();
     return;
   }
 
-  if (persons.filter(p => p.name === newPerson.name).length > 0) {
-    const msg = { error: 'name must be unique' }
-    resp.status(400).json(msg).end();
-    return;
-  }
+  const newPerson = new Person({ name: requestBody.name, number: requestBody.number });
 
-  newPerson.id = Math.floor(Math.random() * 1000);
-  persons.push(newPerson)
-  resp.status(201).json(newPerson);
+  newPerson.save().then(result => {
+    console.log(`added ${result.name} number ${result.number} to phonebook`);
+  })
+
+  resp.status(201).json(requestBody);
 })
 
 app.delete('/api/persons/:id', (req, resp) => {
