@@ -53,14 +53,14 @@ app.get('/api/persons/:id', (req, resp, next) => {
   const personId = req.params.id;
 
   Person.findById(personId)
-  .then(person => {
-    if (person) {
-      resp.send(person);
-    } else {
-      resp.status(404).end()
-    }
-  })
-  .catch(error => next(error))
+    .then(person => {
+      if (person) {
+        resp.send(person);
+      } else {
+        resp.status(404).end()
+      }
+    })
+    .catch(error => next(error))
 
 })
 
@@ -97,8 +97,11 @@ app.delete('/api/persons/:id', (req, resp) => {
 
 
 app.get('/info', (req, resp) => {
-  const msq = `<p>Phonebook has info for ${persons.length} people</p> <p>${new Date()}</p>`;
-  resp.send(msq);
+  Person.find({})
+    .then(result => {
+      const msq = `<p>Phonebook has info for ${result.length} people</p> <p>${new Date()}</p>`;
+      resp.send(msq);
+    })
 })
 
 const errorHandler = (error, request, response, next) => {
@@ -107,7 +110,7 @@ const errorHandler = (error, request, response, next) => {
 
   if (error.name === 'CastError') {
     return response.status(400).send({ error: 'malformatted id' })
-  } 
+  }
 
   next(error)
 }
