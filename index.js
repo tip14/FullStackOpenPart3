@@ -96,7 +96,7 @@ app.put('/api/persons/:id', (req, resp, next) => {
   const updatedPerson = {
     number: requestBody.number
   }
-  Person.findByIdAndUpdate(req.params.id, updatedPerson, { new: true })
+  Person.findByIdAndUpdate(req.params.id, updatedPerson, { new: true, runValidators: true })
     .then(result => resp.json(result))
     .catch(error => next(error))
 })
