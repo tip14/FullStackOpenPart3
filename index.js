@@ -1,3 +1,5 @@
+// IMPORTS
+
 require('dotenv').config()
 
 const express = require('express')
@@ -10,10 +12,12 @@ const app = express();
 
 morgan.token('reqbody', function (req, res) { return JSON.stringify(req.body) })
 
+
 app.use(cors())
 app.use(express.static('build'))
 app.use(express.json())
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :reqbody'))
+
 
 const persons = [
   {
@@ -45,15 +49,19 @@ app.get('/api/persons', (req, resp) => {
     })
 })
 
-app.get('/api/persons/:id', (req, resp) => {
+app.get('/api/persons/:id', (req, resp, next) => {
   const personId = req.params.id;
-  const byPersonId = persons.find(p => p.id == personId)
 
-  if (byPersonId) {
-    resp.send(byPersonId);
-  } else {
-    resp.status(404).end()
-  }
+  Person.findById(personId)
+  .then(person => {
+    if (person) {
+      resp.send(person);
+    } else {
+      resp.status(404).end()
+    }
+  })
+  .catch(error => next(error))
+
 })
 
 app.post('/api/persons', (req, resp) => {
@@ -93,7 +101,18 @@ app.get('/info', (req, resp) => {
   resp.send(msq);
 })
 
+const errorHandler = (error, request, response, next) => {
+  console.log('errorh works');
+  console.error(error.message)
 
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id' })
+  } 
+
+  next(error)
+}
+// this has to be the last loaded middleware.
+app.use(errorHandler)
 
 
 const APP_PORT = process.env.PORT || 3001
