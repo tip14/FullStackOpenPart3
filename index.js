@@ -82,12 +82,9 @@ app.post('/api/persons', (req, resp) => {
 
 app.delete('/api/persons/:id', (req, resp) => {
   const personId = req.params.id;
-  for (let i = 0; i < persons.length; i++) {
-    if (persons[i].id == personId) {
-      persons.splice(i, 1);
-    }
-  }
-  resp.end();
+
+  Person.findByIdAndDelete(personId).then(result => resp.end())
+
 })
 
 
