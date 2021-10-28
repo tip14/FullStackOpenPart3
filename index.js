@@ -1,7 +1,13 @@
+require('dotenv').config()
+
 const express = require('express')
-const app = express();
 const cors = require('cors')
 const morgan = require('morgan')
+const Person = require('./models/person')
+
+
+const app = express();
+
 morgan.token('reqbody', function (req, res) { return JSON.stringify(req.body) })
 
 app.use(cors())
@@ -10,37 +16,40 @@ app.use(express.json())
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :reqbody'))
 
 const persons = [
-    { 
-      "id": 1,
-      "name": "Arto Hellas", 
-      "number": "040-123456"
-    },
-    { 
-      "id": 2,
-      "name": "Ada Lovelace", 
-      "number": "39-44-5323523"
-    },
-    { 
-      "id": 3,
-      "name": "Dan Abramov", 
-      "number": "12-43-234345"
-    },
-    { 
-      "id": 4,
-      "name": "Mary Poppendieck", 
-      "number": "39-23-6423122"
-    }
+  {
+    "id": 1,
+    "name": "Arto Hellas",
+    "number": "040-123456"
+  },
+  {
+    "id": 2,
+    "name": "Ada Lovelace",
+    "number": "39-44-5323523"
+  },
+  {
+    "id": 3,
+    "name": "Dan Abramov",
+    "number": "12-43-234345"
+  },
+  {
+    "id": 4,
+    "name": "Mary Poppendieck",
+    "number": "39-23-6423122"
+  }
 ];
 
 app.get('/api/persons', (req, resp) => {
-    resp.send(persons);
+  Person.find({})
+    .then(result => {
+      resp.send(result)
+    })
 })
 
 app.get('/api/persons/:id', (req, resp) => {
   const personId = req.params.id;
   const byPersonId = persons.find(p => p.id == personId)
 
-  if(byPersonId){
+  if (byPersonId) {
     resp.send(byPersonId);
   } else {
     resp.status(404).end()
@@ -49,26 +58,24 @@ app.get('/api/persons/:id', (req, resp) => {
 
 app.post('/api/persons', (req, resp) => {
   const newPerson = req.body;
-  
-  if(!newPerson.name) {
+
+  if (!newPerson.name) {
     const msg = { error: 'name is empty' }
     resp.status(400).json(msg).end();
     return;
   }
 
-  if(!newPerson.number) {
+  if (!newPerson.number) {
     const msg = { error: 'number is empty' }
     resp.status(400).json(msg).end();
     return;
   }
 
-  if(persons.filter(p => p.name === newPerson.name).length > 0) {
+  if (persons.filter(p => p.name === newPerson.name).length > 0) {
     const msg = { error: 'name must be unique' }
     resp.status(400).json(msg).end();
     return;
   }
-
-
 
   newPerson.id = Math.floor(Math.random() * 1000);
   persons.push(newPerson)
@@ -77,9 +84,9 @@ app.post('/api/persons', (req, resp) => {
 
 app.delete('/api/persons/:id', (req, resp) => {
   const personId = req.params.id;
-  for(let i = 0; i < persons.length; i++) {
-    if(persons[i].id == personId) {
-      persons.splice(i, 1); 
+  for (let i = 0; i < persons.length; i++) {
+    if (persons[i].id == personId) {
+      persons.splice(i, 1);
     }
   }
   resp.end();
