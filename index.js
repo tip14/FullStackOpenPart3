@@ -88,6 +88,16 @@ app.post('/api/persons', (req, resp) => {
   resp.status(201).json(requestBody);
 })
 
+app.put('/api/persons/:id', (req, resp, next) => {
+  const requestBody = req.body;
+  const updatedPerson = {
+    number: requestBody.number
+  }
+  Person.findByIdAndUpdate(req.params.id, updatedPerson, {new: true})
+  .then(result => resp.json(result))
+  .catch(error => next(error))
+})
+
 app.delete('/api/persons/:id', (req, resp) => {
   const personId = req.params.id;
 
@@ -105,7 +115,6 @@ app.get('/info', (req, resp) => {
 })
 
 const errorHandler = (error, request, response, next) => {
-  console.log('errorh works');
   console.error(error.message)
 
   if (error.name === 'CastError') {
